@@ -28,6 +28,7 @@ jobs:
 
             - name: Run tests
               run: | 
+                echo "🔍 Running Test 1..."
                 output=$(./build/programm "hello")
 
                 if [ $? -ne 0 ]; then
@@ -40,10 +41,15 @@ jobs:
                 fi
                 echo "✅ Test 1 PASSED"
 
+                echo "🔍 Running Test 2..."
                 ./build/programm > /dev/null 2>&1
-
-                if [ $? -ne 1 ]; then
-                    echo "❌ Test 2 FAILED: expected exit code 1"
-                    exit 1
+                rc=$?
+                echo "Test 2: exit_code=$rc"
+                
+                if [ $rc -ne 1 ]; then
+                echo "❌ Test 2 FAILED: expected exit code 1, got $rc"
+                exit 1
                 fi
                 echo "✅ Test 2 PASSED"
+                
+                echo "🎉 All tests passed!"
