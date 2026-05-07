@@ -1,0 +1,71 @@
+name: good ci
+
+on: [push, workflow_dispatch]
+
+jobs:
+    build-and-test:
+        runs-on: ${{ matrix.os }}
+    
+        strategy:
+            matrix:
+                os: [ubuntu-22.04, ubuntu-24.04]
+                compiler: [g++, clang++]
+            fail-fast: false
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Chache build artifacts
+              uses: actions/cache@4
+              with:
+                path: |
+                    ~/.ccache
+                    build/
+                key: ${{ runner.os }}-${{ matrix.compiler }}-build-${{ hashFiles('**/CMakeLists.txt') }}
+                restore-keys: |
+                    ${{ runner.os }}-${{ matrix.compiler }}-build-
+
+            - name: Install dependencies
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y g++        
+
+            - name: Configure
+              run: cmake -B build -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_BUILD_TYPE=Release
+
+            - name: Build
+              run: cmake --build build 
+
+            - name: Test
+              run: |
+                echo "🔍 Running Test 1..."
+                if ! output=$(./build/programm "hello"); then
+                    echo "❌ Test 1 FAILED: expected exit code 0, got $?"
+                    exit 1
+                fi
+                if [ "$output" != "hello" ]; then
+                    echo "❌ Test 1 FAILED: wrong output"
+                    exit 1
+                fi
+                echo "✅ Test 1 PASSED"
+
+                
+                echo "🔍 Running Test 2..."
+                if ./build/programm > /dev/null 2>&1; then
+                    echo "❌ Test 2 FAILED: expected exit code 1, got 0"
+                    exit 1
+                fi
+                echo "✅ Test 2 PASSED"
+                
+                echo "🎉 All tests passed!"
+
+            - name: Upload build artifact 
+              uses: actions/upload-artifact@v4
+              if: success()
+              with:
+                name: programm-${{ matrix.os }}-${{ matrix.compiler }}
+                path: build/programm
+                retention-days: 3 
+
+                
