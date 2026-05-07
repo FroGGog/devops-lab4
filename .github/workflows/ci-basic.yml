@@ -16,8 +16,8 @@ jobs:
                 sudo apt-get update
                 sudo apt-get install -y g++ cmake
 
-            - name: Make script executable
-              run: chmod +x tests/run_test.sh
-
             - name: Run test programm
-              run: ./run_test.sh
+              run: |
+                cd tests
+                chmod +x run_test.sh
+                ./run_test.sh
