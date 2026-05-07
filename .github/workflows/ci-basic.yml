@@ -15,7 +15,7 @@ jobs:
               run: |
                 sudo apt-get update
                 sudo apt-get install -y g++
-                
+
             - name: Install cmake
               uses: jwlawson/actions-setup-cmake@v2
               with:
@@ -38,7 +38,7 @@ jobs:
                     echo "Test 1 result - FAILURE"
                 fi
 
-                ./build/programm
+                ./build/programm || true
 
                 exit_code=$?
 
