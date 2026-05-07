@@ -1,0 +1,43 @@
+name: bad ci
+
+on: [push, workflow_dispatch]
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-22.04
+    
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Install and build and test
+              continue-on-error: true
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y g++
+                cmake -B build -DCMAKE_BUILD_TYPE=Release
+                cmake --build build
+
+                echo "🔍 Running Test 1..."
+                if ! output=$(./build/programm "hello"); then
+                    echo "❌ Test 1 FAILED: expected exit code 0, got $?"
+                    exit 1
+                fi
+                if [ "$output" != "hello" ]; then
+                    echo "❌ Test 1 FAILED: wrong output"
+                    exit 1
+                fi
+                echo "✅ Test 1 PASSED"
+
+                
+                echo "🔍 Running Test 2..."
+                if ./build/programm > /dev/null 2>&1; then
+                    echo "❌ Test 2 FAILED: expected exit code 1, got 0"
+                    exit 1
+                fi
+                echo "✅ Test 2 PASSED"
+                
+                echo "🎉 All tests passed!"
+
+
+                
