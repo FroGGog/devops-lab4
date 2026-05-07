@@ -1,0 +1,3 @@
+/Users/daniilbucenin/DevOps/devops-lab4/build/CMakeFiles/programm.dir
+/Users/daniilbucenin/DevOps/devops-lab4/build/CMakeFiles/edit_cache.dir
+/Users/daniilbucenin/DevOps/devops-lab4/build/CMakeFiles/rebuild_cache.dir
